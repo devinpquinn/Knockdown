@@ -270,6 +270,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: affbd8b98440d4a44aeb009ef94bb2c9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
+  ballPrefab: {fileID: 8682638873233232571, guid: d44b8314463bf3b43898c95675cb3730, type: 3}
+  spawnPoint: {fileID: 367420716}
+  launchForce: 50
   mouseSensitivity: 100
   maxRotationX: 30
   maxRotationY: 40
