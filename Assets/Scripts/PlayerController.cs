@@ -1,5 +1,7 @@
 using UnityEngine;
 
+// ...existing using statements...
+
 public class PlayerController : MonoBehaviour
 {
 	// Ball prefab to spawn
@@ -20,17 +22,33 @@ public class PlayerController : MonoBehaviour
 	private float smoothYRotation = 0f;
 	public float smoothTime = 0.1f;
 
+	private GameObject heldBall = null;
+	private bool canThrow = true;
+	private float cooldownTimer = 0f;
+	public float throwCooldown = 1f;
+
 	void Start()
 	{
 		// Lock cursor for camera control
 		Cursor.lockState = CursorLockMode.Locked;
-		Cursor.visible = false;
+		SpawnHeldBall();
 	}
 
 	void Update()
 	{
+		// Handle cooldown timer
+		if (!canThrow)
+		{
+			cooldownTimer -= Time.deltaTime;
+			if (cooldownTimer <= 0f)
+			{
+				canThrow = true;
+				SpawnHeldBall();
+			}
+		}
+
 		// On left mouse click, shoot ball
-		if (Input.GetMouseButtonDown(0))
+		if (Input.GetMouseButtonDown(0) && canThrow && heldBall != null)
 		{
 			ShootBall();
 		}
@@ -69,13 +87,31 @@ public class PlayerController : MonoBehaviour
 			targetPoint = ray.GetPoint(100f);
 		}
 
-		// Instantiate ball at spawnPoint
-		GameObject ball = Instantiate(ballPrefab, spawnPoint.position, Quaternion.identity);
-		Rigidbody rb = ball.GetComponent<Rigidbody>();
+		// Throw the held ball
+		Rigidbody rb = heldBall.GetComponent<Rigidbody>();
 		if (rb != null)
 		{
+			rb.isKinematic = false;
 			Vector3 direction = (targetPoint - spawnPoint.position).normalized;
 			rb.AddForce(direction * launchForce, ForceMode.Impulse);
 		}
+		heldBall.transform.SetParent(null);
+		heldBall = null;
+		canThrow = false;
+		cooldownTimer = throwCooldown;
+	}
+
+	// Spawns a ball at the spawn point and holds it
+	void SpawnHeldBall()
+	{
+		heldBall = Instantiate(ballPrefab, spawnPoint.position, Quaternion.identity);
+		Rigidbody rb = heldBall.GetComponent<Rigidbody>();
+		if (rb != null)
+		{
+			rb.isKinematic = true;
+		}
+		// Parent the ball to the spawn point for visual holding
+		heldBall.transform.SetParent(spawnPoint);
+		heldBall.transform.localPosition = Vector3.zero;
 	}
 }
