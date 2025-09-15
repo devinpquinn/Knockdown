@@ -501,7 +501,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerController
   minChargeTime: 0.1
-  maxHandDrawback: 0.5
+  maxHandDrawback: 0.25
   handMoveSmooth: 10
   ballPrefab: {fileID: 8682638873233232571, guid: d44b8314463bf3b43898c95675cb3730, type: 3}
   spawnPoint: {fileID: 367420716}
@@ -512,7 +512,7 @@ MonoBehaviour:
   throwCooldown: 1
   minLaunchForce: 10
   maxLaunchForce: 50
-  maxChargeTime: 0.5
+  maxChargeTime: 1
 --- !u!1 &367420715
 GameObject:
   m_ObjectHideFlags: 0

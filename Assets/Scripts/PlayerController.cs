@@ -2,36 +2,38 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-	public float minChargeTime = 0.1f; // Minimum time to hold before throw
-	// Hand draw-back variables
-	private Vector3 spawnPointOriginalLocalPos;
-	public float maxHandDrawback = 0.5f; // max offset along -z
-	public float handMoveSmooth = 10f;
-	// Ball prefab to spawn
+	// Ball and hand references
 	public GameObject ballPrefab;
-	// Transform child representing spawn point
 	public Transform spawnPoint;
-	// Mouse sensitivity for camera movement
-	public float mouseSensitivity = 100f;
-	// Maximum rotation angles
-	public float maxRotationX = 80f; // Up/Down
-	public float maxRotationY = 80f; // Left/Right
+	private Vector3 spawnPointOriginalLocalPos;
 
+	// Hand draw-back settings
+	public float maxHandDrawback = 0.5f;
+	public float handMoveSmooth = 10f;
+
+	// Camera and rotation settings
+	public float mouseSensitivity = 100f;
+	public float maxRotationX = 80f;
+	public float maxRotationY = 80f;
+	public float smoothTime = 0.1f;
 	private float xRotation = 0f;
 	private float yRotation = 0f;
 	private float smoothXRotation = 0f;
 	private float smoothYRotation = 0f;
-	public float smoothTime = 0.1f;
 
-	private GameObject heldBall = null;
-	private bool canThrow = true;
-	private float cooldownTimer = 0f;
-	public float throwCooldown = 1f;
-	private bool isCharging = false;
-	private float chargeTimer = 0f;
+	// Throwing and charge settings
+	public float minChargeTime = 0.1f;
 	public float minLaunchForce = 5f;
 	public float maxLaunchForce = 25f;
 	public float maxChargeTime = 2f;
+	public float throwCooldown = 1f;
+
+	// State variables
+	private GameObject heldBall = null;
+	private bool canThrow = true;
+	private float cooldownTimer = 0f;
+	private bool isCharging = false;
+	private float chargeTimer = 0f;
 
 	void Start()
 	{
