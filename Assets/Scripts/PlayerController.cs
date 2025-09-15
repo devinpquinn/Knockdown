@@ -2,12 +2,14 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+	// Hand draw-back variables
+	private Vector3 spawnPointOriginalLocalPos;
+	public float maxHandDrawback = 0.5f; // max offset along -z
+	public float handMoveSmooth = 10f;
 	// Ball prefab to spawn
 	public GameObject ballPrefab;
 	// Transform child representing spawn point
 	public Transform spawnPoint;
-	// Force applied to the ball
-	public float launchForce = 10f;
 	// Mouse sensitivity for camera movement
 	public float mouseSensitivity = 100f;
 	// Maximum rotation angles
@@ -24,16 +26,37 @@ public class PlayerController : MonoBehaviour
 	private bool canThrow = true;
 	private float cooldownTimer = 0f;
 	public float throwCooldown = 1f;
+	private bool isCharging = false;
+	private float chargeTimer = 0f;
+	public float minLaunchForce = 5f;
+	public float maxLaunchForce = 25f;
+	public float maxChargeTime = 2f;
 
 	void Start()
 	{
 		// Lock cursor for camera control
 		Cursor.lockState = CursorLockMode.Locked;
+		// Store original local position of hand
+		if (spawnPoint != null)
+			spawnPointOriginalLocalPos = spawnPoint.localPosition;
 		SpawnHeldBall();
 	}
 
 	void Update()
 	{
+		// Hand drawback logic
+		if (isCharging && spawnPoint != null)
+		{
+			float chargePercent = chargeTimer / maxChargeTime;
+			float targetZ = spawnPointOriginalLocalPos.z - maxHandDrawback * chargePercent;
+			Vector3 targetLocalPos = new Vector3(spawnPointOriginalLocalPos.x, spawnPointOriginalLocalPos.y, targetZ);
+			spawnPoint.localPosition = Vector3.Lerp(spawnPoint.localPosition, targetLocalPos, Time.deltaTime * handMoveSmooth);
+		}
+		else if (spawnPoint != null)
+		{
+			// Smoothly return hand to original position
+			spawnPoint.localPosition = Vector3.Lerp(spawnPoint.localPosition, spawnPointOriginalLocalPos, Time.deltaTime * handMoveSmooth);
+		}
 		// Handle cooldown timer
 		if (!canThrow)
 		{
@@ -48,7 +71,20 @@ public class PlayerController : MonoBehaviour
 		// On left mouse click, shoot ball
 		if (Input.GetMouseButtonDown(0) && canThrow && heldBall != null)
 		{
-			ShootBall();
+			isCharging = true;
+			chargeTimer = 0f;
+		}
+		if (isCharging && Input.GetMouseButton(0))
+		{
+			chargeTimer += Time.deltaTime;
+			chargeTimer = Mathf.Min(chargeTimer, maxChargeTime);
+		}
+		if (isCharging && Input.GetMouseButtonUp(0) && canThrow && heldBall != null)
+		{
+			float chargePercent = chargeTimer / maxChargeTime;
+			float chargedForce = Mathf.Lerp(minLaunchForce, maxLaunchForce, chargePercent);
+			ShootBall(chargedForce);
+			isCharging = false;
 		}
 
 		float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
@@ -70,7 +106,8 @@ public class PlayerController : MonoBehaviour
 	}
 
 	// Shoots a ball from spawnPoint towards the raycast hit point
-	void ShootBall()
+	// Shoots a ball from spawnPoint towards the raycast hit point, with custom force
+	void ShootBall(float customForce)
 	{
 		Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
 		RaycastHit hit;
@@ -91,7 +128,7 @@ public class PlayerController : MonoBehaviour
 		{
 			rb.isKinematic = false;
 			Vector3 direction = (targetPoint - spawnPoint.position).normalized;
-			rb.AddForce(direction * launchForce, ForceMode.Impulse);
+			rb.AddForce(direction * customForce, ForceMode.Impulse);
 		}
 		heldBall.transform.SetParent(null);
 		heldBall = null;

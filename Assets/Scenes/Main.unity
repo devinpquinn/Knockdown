@@ -531,6 +531,10 @@ MonoBehaviour:
   maxRotationX: 30
   maxRotationY: 40
   smoothTime: 0.1
+  throwCooldown: 1
+  minLaunchForce: 10
+  maxLaunchForce: 50
+  maxChargeTime: 1
 --- !u!1 &367420715
 GameObject:
   m_ObjectHideFlags: 0
