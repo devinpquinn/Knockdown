@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+	public float minChargeTime = 0.1f; // Minimum time to hold before throw
 	// Hand draw-back variables
 	private Vector3 spawnPointOriginalLocalPos;
 	public float maxHandDrawback = 0.5f; // max offset along -z
@@ -81,9 +82,13 @@ public class PlayerController : MonoBehaviour
 		}
 		if (isCharging && Input.GetMouseButtonUp(0) && canThrow && heldBall != null)
 		{
-			float chargePercent = chargeTimer / maxChargeTime;
-			float chargedForce = Mathf.Lerp(minLaunchForce, maxLaunchForce, chargePercent);
-			ShootBall(chargedForce);
+			if (chargeTimer >= minChargeTime)
+			{
+				float chargePercent = chargeTimer / maxChargeTime;
+				float chargedForce = Mathf.Lerp(minLaunchForce, maxLaunchForce, chargePercent);
+				ShootBall(chargedForce);
+			}
+			// Always reset charging state
 			isCharging = false;
 		}
 
