@@ -487,7 +487,7 @@ MonoBehaviour:
   maxRotationX: 30
   maxRotationY: 40
   smoothTime: 0.1
-  minChargeTime: 0.5
+  minChargeTime: 0.2
   minLaunchForce: 10
   maxLaunchForce: 80
   maxChargeTime: 0.5
