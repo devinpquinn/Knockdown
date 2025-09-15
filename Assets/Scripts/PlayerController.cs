@@ -1,7 +1,5 @@
 using UnityEngine;
 
-// ...existing using statements...
-
 public class PlayerController : MonoBehaviour
 {
 	// Ball prefab to spawn
